@@ -13,7 +13,8 @@ class SupportTicket extends Model
 
     protected $fillable = ["ticket_description", "customer_name", "customer_email", "customer_phone_number", "ref_no"];
 
-    public function ticket_reply() {
-        return $this->hasMany(TicketReply::class,"ticket_id");
+    public function ticket_reply()
+    {
+        return $this->hasMany(TicketReply::class, "ticket_id");
     }
 }

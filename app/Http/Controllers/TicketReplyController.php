@@ -27,7 +27,7 @@ class TicketReplyController extends Controller
      */
     public function create()
     {
-
+        //
     }
 
     /**
@@ -46,7 +46,7 @@ class TicketReplyController extends Controller
 
         $ticket = SupportTicket::find($request->ticket_id);
 
-        if (Auth::check())
+        if (Auth::check() )
         {
             $id = Auth::id();
 
@@ -55,7 +55,7 @@ class TicketReplyController extends Controller
             $content = "Hello ".$ticket->customer_name.",\nWe have Replied to your Support Ticket.";
             $title = "Reply Ticket ID - #".($ticket->ref_no).".";
 
-            Mail::raw($content,function ($message) use ($title, $ticket) {
+            Mail::raw($content, function ($message) use ($title, $ticket) {
                 $message->to($ticket->customer_email)
                     ->from("admin@gmail.com")
                     ->subject($title);
@@ -63,8 +63,7 @@ class TicketReplyController extends Controller
 
             //update the ticket
             $ticket->ticket_status = 5;
-
-        }else {
+        } else {
             //update the ticket
             $ticket->ticket_status = 2;
         }
@@ -82,7 +81,7 @@ class TicketReplyController extends Controller
             "agent_id" => $id
         ]);
 
-        return redirect(route("ticket.show",$ticket));
+        return redirect(route("ticket.show", $ticket));
     }
 
     /**

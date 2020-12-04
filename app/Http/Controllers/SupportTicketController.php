@@ -19,10 +19,10 @@ class SupportTicketController extends Controller
     {
         $customer_name = "";
         $tickets = SupportTicket::where([
-            ["customer_name","!=",Null],
-            [function ($query) use ($request){
-                if(($cus_name = $request->customer_name)){
-                    $query->orWhere("customer_name","LIKE","%".$cus_name."%");
+            ["customer_name","!=",null],
+            [function ($query) use ($request) {
+                if (($cus_name = $request->customer_name)) {
+                    $query->orWhere("customer_name", "LIKE", "%".$cus_name."%");
                 }
             }]
         ])->paginate(10);
@@ -32,8 +32,8 @@ class SupportTicketController extends Controller
         }
 
         return view("ticket.list")
-            ->with("customer_name",$customer_name)
-            ->with("tickets",$tickets);
+            ->with("customer_name", $customer_name)
+            ->with("tickets", $tickets);
     }
 
     /**
@@ -63,24 +63,23 @@ class SupportTicketController extends Controller
 
         $ref_no = $this->generateTicketNo(10);
 
-        $data = array_merge($request->all(),["ref_no" =>$ref_no]);
+        $data = array_merge($request->all(), ["ref_no" =>$ref_no]);
         $ticket = SupportTicket::create($data);
 
         $content = "Hello ".\request("customer_name").",\n
         We have Created Trouble Ticket For you. \n
         Your Ticket Reference No-".$ref_no;
-        Mail::raw($content,function ($message) use ($ref_no) {
+        Mail::raw($content, function ($message) use ($ref_no) {
             $message->to(\request("customer_email"))
                 ->from("admin@gmail.com")
                 ->subject("Your Ticket ID - #".$ref_no);
         });
 
         if (Auth::guest()) {
-            return redirect(route("ticket.show",$ticket->id));
-        }else {
+            return redirect(route("ticket.show", $ticket->id));
+        } else {
             return redirect(route("ticket.index"));
         }
-
     }
 
     /**
@@ -91,7 +90,7 @@ class SupportTicketController extends Controller
      */
     public function show(SupportTicket $supportTicket)
     {
-        return view("ticket.edit")->with("ticket",$supportTicket);
+        return view("ticket.edit")->with("ticket", $supportTicket);
     }
 
     /**
@@ -126,27 +125,27 @@ class SupportTicketController extends Controller
         $request->validate(["ticket_id"=>"required"]);
 
         $ticket = SupportTicket::where([
-            ["ref_no","!=",Null],
-            [function ($query) use ($request){
-                if(($ticket_id = $request->ticket_id)){
-                    $query->orWhere("ref_no","=",$ticket_id);
+            ["ref_no","!=",null],
+            [function ($query) use ($request) {
+                if (($ticket_id = $request->ticket_id)) {
+                    $query->orWhere("ref_no", "=", $ticket_id);
                 }
             }]
         ])->first();
 
-        return view('welcome')->with("ticket",$ticket);
+        return view('welcome')->with("ticket", $ticket);
     }
 
     //generate ticketNo
-    function generateTicketNo($length)
+    public function generateTicketNo($length)
     {
         $number = '';
 
         do {
             for ($i=$length; $i--; $i>0) {
-                $number .= mt_rand(0,9);
+                $number .= mt_rand(0, 9);
             }
-        } while ( !empty(SupportTicket::where('ref_no', $number)->first(['ref_no'])) );
+        } while (!empty(SupportTicket::where('ref_no', $number)->first(['ref_no'])));
 
         return $number;
     }

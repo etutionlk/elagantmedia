@@ -20,7 +20,8 @@ class CreateSupportTicketsTable extends Migration
             $table->string("customer_email");
             $table->string("customer_phone_number");
             $table->text("ticket_description");
-            $table->integer("ticket_status")->default(1)->comment("1=open,2=pending,3=resolved,4=closed,5=waiting for customer reply");
+            $table->integer("ticket_status")->default(1)
+                ->comment("1=open,2=pending,3=resolved,4=closed,5=waiting for customer reply");
             $table->timestamps();
         });
     }

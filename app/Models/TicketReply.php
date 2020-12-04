@@ -11,11 +11,13 @@ class TicketReply extends Model
 
     protected $fillable = ["ticket_id","agent_id","reply_description"];
 
-    public function support_ticket() {
+    public function support_ticket()
+    {
         return $this->belongsTo(SupportTicket::class);
     }
 
-    public function agent() {
-        return $this->belongsTo(User::class,"agent_id");
+    public function agent()
+    {
+        return $this->belongsTo(User::class, "agent_id");
     }
 }
