@@ -26,7 +26,7 @@ Route::get("/ticket",[\App\Http\Controllers\SupportTicketController::class,"inde
 //Route::get("/ticket/add",[\App\Http\Controllers\SupportTicketController::class,"create"])->name("ticket.create");
 Route::post("/ticket/save",[\App\Http\Controllers\SupportTicketController::class,"store"])->name("ticket.store");
 Route::get("/ticket/{support_ticket}",[\App\Http\Controllers\SupportTicketController::class,"show"])->name("ticket.show");
-Route::get("/ticket/search",[\App\Http\Controllers\SupportTicketController::class,"search"])->name("ticket.search");
+Route::post("/ticket/search",[\App\Http\Controllers\SupportTicketController::class,"search"])->name("ticket.search");
 
 
 Route::resource("ticketreply",\App\Http\Controllers\TicketReplyController::class);

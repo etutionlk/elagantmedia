@@ -9,13 +9,18 @@
                 <hr/>
                 <div class="" style="width: 100%">
                     <div class="m-2">
-                        <form action="{{ route('ticket.search') }}" method="GET" role="search">
+                        <form action="{{ route('ticket.search') }}" method="POST" role="search" id="search-ticket">
+                            @csrf
                             <fieldset>
                                 <div class="row">
                                     <div class="col-lg-8">
                                         <div class="form-group">
-                                            <input type="text" name="ticket_id" id="ticket_id" class="form-control"
+                                            <input type="text" name="ticket_id" id="ticket_id" class="form-control @error('ticket_id') is-invalid @enderror"
+                                                   value="{{ ( !empty(old('ticket_id')) ? old('ticket_id') : '' ) }}"
                                                    placeholder="Type your Ticket ID here..." />
+                                            @error('ticket_id')
+                                            <span class="help invalid-feedback">{{ $message }}</span>
+                                            @enderror
                                         </div>
                                     </div>
                                     <div class="col-lg-2">
@@ -31,7 +36,9 @@
 
                 <div class="col-lg-6">
                     @if(isset($ticket))
-                        <p>this dsd osdsds</p>
+                        <a href="{{ route("ticket.show",$ticket) }}" class="btn btn-primary">{{ $ticket->ref_no }}</a>
+                    @else
+                        <p> No Support Tickets Found.</p>
                     @endif
                 </div>
         </div>
@@ -91,3 +98,4 @@
             </div>
     </div>
 @endsection
+

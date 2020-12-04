@@ -113,6 +113,10 @@
                                     <textarea rows="4" name="ticket_reply" id="ticket_reply" class="form-control"></textarea>
                                 </div>
 
+                                <div class="form-group pull-left">
+                                    <input type="checkbox" name="is_resolved" id="is_resolved" /> Problem Resolved
+                                </div>
+
                                 <div class="form-group pull-right">
                                     <input type="submit" name="submit" id="submit1" class="btn btn-success" value="Reply"/>
                                 </div>

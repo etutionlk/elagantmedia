@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\SupportTicket;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use phpDocumentor\Reflection\Types\Null_;
+use Illuminate\Support\Facades\Mail;
 
 class SupportTicketController extends Controller
 {
@@ -28,7 +30,7 @@ class SupportTicketController extends Controller
         if (isset($request->customer_name)) {
             $customer_name = $request->customer_name;
         }
-//        $tickets = SupportTicket::paginate(10);
+
         return view("ticket.list")
             ->with("customer_name",$customer_name)
             ->with("tickets",$tickets);
@@ -59,15 +61,26 @@ class SupportTicketController extends Controller
             "ticket_description"=>"required",
         ]);
 
-        //get last id
-//        $last = SupportTicket::latest()->first();
+        $ref_no = $this->generateTicketNo(10);
 
-        $tk = "TKT001";
+        $data = array_merge($request->all(),["ref_no" =>$ref_no]);
+        $ticket = SupportTicket::create($data);
 
-        $data = array_merge($request->all(),["ref_no" =>$tk]);
-        SupportTicket::create($data);
+        $content = "Hello ".\request("customer_name").",\n
+        We have Created Trouble Ticket For you. \n
+        Your Ticket Reference No-".$ref_no;
+        Mail::raw($content,function ($message) use ($ref_no) {
+            $message->to(\request("customer_email"))
+                ->from("admin@gmail.com")
+                ->subject("Your Ticket ID - #".$ref_no);
+        });
 
-        return redirect(route("ticket.index"));
+        if (Auth::guest()) {
+            return redirect(route("ticket.show",$ticket->id));
+        }else {
+            return redirect(route("ticket.index"));
+        }
+
     }
 
     /**
@@ -108,18 +121,33 @@ class SupportTicketController extends Controller
      * @param Request $request
      * @return mixed
      */
-    public function search()
+    public function search(Request $request)
     {
-        echo "Dsdss"; die();
+        $request->validate(["ticket_id"=>"required"]);
+
         $ticket = SupportTicket::where([
-            ["ticket_id","!=",Null],
+            ["ref_no","!=",Null],
             [function ($query) use ($request){
                 if(($ticket_id = $request->ticket_id)){
-                    $query->orWhere("ticket_id","=",$ticket_id);
+                    $query->orWhere("ref_no","=",$ticket_id);
                 }
             }]
         ])->first();
 
-        return view('welcome');
+        return view('welcome')->with("ticket",$ticket);
+    }
+
+    //generate ticketNo
+    function generateTicketNo($length)
+    {
+        $number = '';
+
+        do {
+            for ($i=$length; $i--; $i>0) {
+                $number .= mt_rand(0,9);
+            }
+        } while ( !empty(SupportTicket::where('ref_no', $number)->first(['ref_no'])) );
+
+        return $number;
     }
 }

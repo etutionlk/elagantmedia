@@ -6,6 +6,7 @@ use App\Models\SupportTicket;
 use App\Models\TicketReply;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
 
 class TicketReplyController extends Controller
 {
@@ -43,15 +44,36 @@ class TicketReplyController extends Controller
 
         $id = 0;
 
+        $ticket = SupportTicket::find($request->ticket_id);
+
         if (Auth::check())
         {
             $id = Auth::id();
+
+            //agent reply
+//            $data = SupportTicket::find($request->ticket_id);
+            $content = "Hello ".$ticket->customer_name.",\nWe have Replied to your Support Ticket.";
+            $title = "Reply Ticket ID - #".($ticket->ref_no).".";
+
+            Mail::raw($content,function ($message) use ($title, $ticket) {
+                $message->to($ticket->customer_email)
+                    ->from("admin@gmail.com")
+                    ->subject($title);
+            });
+
+            //update the ticket
+            $ticket->ticket_status = 5;
+
+        }else {
+            //update the ticket
+            $ticket->ticket_status = 2;
         }
 
-        $ticket = SupportTicket::find($request->ticket_id);
+        if (!empty($request->get("is_resolved"))) {
+            //update the ticket
+            $ticket->ticket_status = 4;
+        }
 
-        //update the ticket
-        $ticket->ticket_status = 5;
         $ticket->save();
 
         TicketReply::create([
